@@ -33,6 +33,7 @@ public class GameScreen implements Screen {
     Texture wallImage;
     int cellW;
     int cellH;
+    Texture bucketImage;
 //    Array<Rectangle> map;
 
     public GameScreen(final Game game) {
@@ -67,21 +68,21 @@ public class GameScreen implements Screen {
 
         // tell the camera to update its matrices.
         camera.update();
-
-
         // tell the SpriteBatch to render in the
         // coordinate system specified by the camera.
         game.batch.setProjectionMatrix(camera.combined);
-
         // begin a new batch and draw the bucket and
         // all drops
         game.batch.begin();
         drawMap(game.batch);
 //        ghost1.draw(game.batch);
         game.batch.draw(ghost1.sprite, ghost1.x, ghost1.y, cellW, cellH);
+        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)){
+            pause();
+        }
         update(Gdx.graphics.getDeltaTime());
-        game.batch.end();
 
+        game.batch.end();
 
     }
 
@@ -102,6 +103,11 @@ public class GameScreen implements Screen {
 
     @Override
     public void pause() {
+        ScreenUtils.clear(0,0,0.2f, 1);
+        camera.update();
+        game.batch.setProjectionMatrix(camera.combined);
+        bucketImage = new Texture(Gdx.files.internal("../../../sprites/paused.png"));
+        game.batch.draw(bucketImage, 150, 50, 500, 500);
     }
 
     @Override
@@ -125,14 +131,6 @@ public class GameScreen implements Screen {
             timeState = 0;
         }
     }
-
-
-
-
-
-
-
-
 
 
     private void drawMap(Batch batch) {

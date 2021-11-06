@@ -1,6 +1,8 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
+import com.mygdx.game.GameScreen;
+
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -40,6 +42,7 @@ public class Ghost extends GameObject{
         else if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT))
             dir = Direction.RIGHT;
     }
+
 
     public void setDirection(Direction dir) {
         if (dir == Direction.UP) {
