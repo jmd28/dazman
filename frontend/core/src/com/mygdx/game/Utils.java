@@ -5,7 +5,7 @@ class Pair<K,V> {
     V snd;
 
     static <K,V> Pair<K,V> of(K fst, V snd) {
-        var ret = new Pair<K,V>();
+        Pair<K,V> ret = new Pair<>();
         ret.fst=fst;
         ret.snd=snd;
         return ret;

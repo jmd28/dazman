@@ -9,7 +9,7 @@ public class Map {
         // print cells
         for (char[] r : cells) {
             for (char c : r) {
-                System.out.printf("%1c", c);
+                System.out.printf("%3c", c);
             }
             System.out.println();
         }
@@ -22,9 +22,9 @@ public class Map {
         tetris.printModel();
 
         // convert model to actual map
-        var cells = tetris.upscale();
-        var mirror = tetris.mirrorred(cells);
-        var tunnelled = tetris.tunnelled(mirror);
+        char[][] cells = tetris.upscale();
+        char[][] mirror = tetris.mirrorred(cells);
+        char[][] tunnelled = tetris.tunnelled(mirror);
         draw(tunnelled);
         return tunnelled;
     }

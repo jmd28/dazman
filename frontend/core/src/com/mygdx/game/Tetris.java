@@ -1,5 +1,8 @@
 package com.mygdx.game;
 
+import sun.jvm.hotspot.debugger.linux.LinuxDebugger;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -55,7 +58,7 @@ public class Tetris {
     private Cell[][] chimney;
 
     final char PATH = '•';
-    final char WALL = '|';
+    final char WALL = '█';
 
 
     void init() {
@@ -85,14 +88,17 @@ public class Tetris {
     }
 
     boolean chimFull() {
-        return Arrays.stream(chimney).allMatch(r->
-                Arrays.stream(r).allMatch(c -> c.filled)
-        );
+//        return Arrays.stream(chimney).allMatch(r->
+//                Arrays.stream(r).allMatch(c -> c.filled)
+//        );
+        for (Cell[] r : chimney) for (Cell c : r)
+            if (!c.filled) return false;
+        return true;
     }
 
-    boolean colFull(int i) {
-        return Arrays.stream(chimney).allMatch(r -> r[i].filled);
-    }
+//    boolean colFull(int i) {
+//        return Arrays.stream(chimney).allMatch(r -> r[i].filled);
+//    }
 
     void assign(Cell c, int tetromino) {
         c.filled=true;
@@ -100,25 +106,38 @@ public class Tetris {
     }
 
     List<Cell> freeNeighbours(Cell c) {
-        return Stream.of(
-                        Pair.of(c.y+1,c.x),
-                        Pair.of(c.y-1,c.x),
-                        Pair.of(c.y,c.x+1),
-                        Pair.of(c.y,c.x-1)
-                )
-                .filter(it -> it.fst>=0 && it.fst < HEIGHT && it.snd>=0 && it.snd < WIDTH)
-                .map(it -> chimney[it.fst][it.snd])
-                .filter(it -> !it.filled)
-                .collect(Collectors.toList());
+//        return Stream.of(
+//                        Pair.of(c.y+1,c.x),
+//                        Pair.of(c.y-1,c.x),
+//                        Pair.of(c.y,c.x+1),
+//                        Pair.of(c.y,c.x-1)
+//                )
+//                .filter(it -> it.fst>=0 && it.fst < HEIGHT && it.snd>=0 && it.snd < WIDTH)
+//                .map(it -> chimney[it.fst][it.snd])
+//                .filter(it -> !it.filled)
+//                .collect(Collectors.toList());
+        List<Pair<Integer,Integer>> indices = Arrays.asList(Pair.of(c.y+1,c.x),
+                Pair.of(c.y-1,c.x),
+                Pair.of(c.y,c.x+1),
+                Pair.of(c.y,c.x-1));
+
+        List<Cell> freeNeighbours = new ArrayList<>();
+        for (Pair<Integer,Integer> i : indices)
+            if (i.fst >= 0 && i.fst < HEIGHT && i.snd >= 0 && i.snd < WIDTH)
+                if (!chimney[i.fst][i.snd].filled)
+                    freeNeighbours.add(chimney[i.fst][i.snd]);
+
+        return freeNeighbours;
+
     }
 
     void expand(Cell c, int tetromino, int size) {
         assign(c,tetromino);
         final int magicNumber = 3;
         if (size==magicNumber) return;
-        var choices = freeNeighbours(c);
+        List<Cell> choices = freeNeighbours(c);
         if (choices.isEmpty()) return;
-        var chosen = choices.get(ran.nextInt(choices.size()));
+        Cell chosen = choices.get(ran.nextInt(choices.size()));
 
         expand(chosen,tetromino,size+1);
     }
@@ -138,7 +157,7 @@ public class Tetris {
             // the leftmost unfilled level
             int floor = leftmostUnfilled();
             // this is bad oops
-            var chosenCell = chimney[ran.nextInt(HEIGHT)][floor];
+            Cell chosenCell = chimney[ran.nextInt(HEIGHT)][floor];
             if (chosenCell.filled) continue;
             expand(chosenCell,tetromino++,0);
             System.out.println();
@@ -149,9 +168,8 @@ public class Tetris {
 
     private int leftmostUnfilled() {
         for (int i = 0; i<WIDTH; i++) {
-            int finalI = i;
-            if (!Arrays.stream(chimney).allMatch(r -> r[finalI].filled))
-                return i;
+            for (Cell[] r : chimney)
+                if (!r[i].filled) return i;
         }
         // shouldn't end up here
         return -1;
@@ -186,8 +204,8 @@ public class Tetris {
         // mark cells w/ borders
         for (Cell[] r : chimney) {
             for (Cell c : r) {
-                var row = c.y;
-                var col = c.x;
+                int row = c.y;
+                int col = c.x;
 
                 // if piece border above cell
                 if (row > 0 && chimney[row - 1][col].tetrominoID != c.tetrominoID) {
@@ -216,11 +234,11 @@ public class Tetris {
 
     char[][] mirrorred(char[][] half) {
         // tasty risky indexing
-        var h = half.length;
-        var w = half[0].length;
+        int h = half.length;
+        int w = half[0].length;
 
         //mirror about last column
-        var result = new char[h][w*2-1];
+        char[][] result = new char[h][w*2-1];
         for (int i = 0; i<w;i++) {
             for (int j = 0; j<h;j++) {
                 result[j][i]=half[j][i];
@@ -232,10 +250,10 @@ public class Tetris {
 
     char[][] tunnelled(char[][] map) {
         // tasty risky indexing
-        var h = map.length;
-        var w = map[0].length;
+        int h = map.length;
+        int w = map[0].length;
 
-        var result = new char[h+2][w+2];
+        char[][] result = new char[h+2][w+2];
 
         // draw border around map
         for (int i = 0; i<w+2;i++) {
@@ -253,16 +271,23 @@ public class Tetris {
         // add sexy interdimensional portals
         int numPortals = h/11;
         int scalingFactor = h/3;
-        var candidateRows = ran
-                // force tunnels to be spaced out by using upscaling again
-                .ints(0,h/scalingFactor)
-                .distinct()
-                // upscale and translate onto center of each division
-                .map(i -> scalingFactor*i+scalingFactor/2)
-                .limit(numPortals);
+//        var candidateRows = ran
+//                // force tunnels to be spaced out by using upscaling again
+//                .ints(0,h/scalingFactor)
+//                .distinct()
+//                // upscale and translate onto center of each division
+//                .map(i -> scalingFactor*i+scalingFactor/2)
+//                .limit(numPortals);
+        List<Integer> portalRows = new ArrayList<>();
+        for (int i = 0; i<numPortals; i++) {
+            int pos = ran.nextInt(h/scalingFactor);
+            int scaledPos = scalingFactor*pos+scalingFactor/2;
+            portalRows.add(scaledPos);
+        }
 
-        candidateRows.forEach(r -> { result[r+1][0] = PATH; result[r+1][w+1] = PATH; } );
-
+        for (int r : portalRows) {
+            result[r+1][0] = PATH; result[r+1][w+1] = PATH;
+        }
 
         return result;
     }
