@@ -29,10 +29,10 @@ public class GameScreen implements Screen {
     private boolean gameOver;
     private float timeState;
     OrthographicCamera camera;
-    char[][] mapModel;
+    static char[][] mapModel;
     Texture wallImage;
-    int cellW;
-    int cellH;
+    static int cellW;
+    static int cellH;
 //    Array<Rectangle> map;
 
     public GameScreen(final Game game) {
@@ -46,8 +46,12 @@ public class GameScreen implements Screen {
         cellH = (int) camera.viewportHeight / mapModel.length;
 
         Sprite ghostSprite = new Sprite(new Texture("jon2.jpg"));
-        ghost1 = new Ghost(ghostSprite, 100,100);
-        Pixmap pixmap2 = new Pixmap(Gdx.files.internal("Map Sprites/csBlueDark.png"));
+        System.out.println(mapModel[0].length);
+        System.out.println(mapModel.length);
+        ghost1 = new Ghost(ghostSprite,
+                //cellW*mapModel[0].length/2 - cellW/2,cellH*(mapModel.length/2-1));
+                cellW,cellH);
+                Pixmap pixmap2 = new Pixmap(Gdx.files.internal("Map Sprites/csBlueDark.png"));
         Pixmap pixmap1 = new Pixmap(cellW, cellH, pixmap2.getFormat());
         pixmap1.drawPixmap(pixmap2,
                 0, 0, pixmap2.getWidth(), pixmap2.getHeight(),
@@ -78,11 +82,9 @@ public class GameScreen implements Screen {
         game.batch.begin();
         drawMap(game.batch);
 //        ghost1.draw(game.batch);
-        game.batch.draw(ghost1.sprite, ghost1.x, ghost1.y, cellW, cellH);
+        game.batch.draw(ghost1.sprite, ghost1.x, ghost1.y, (int)(cellW*.8), (int)(cellH));
         update(Gdx.graphics.getDeltaTime());
         game.batch.end();
-
-
     }
 
     @Override
