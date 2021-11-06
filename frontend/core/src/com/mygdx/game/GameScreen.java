@@ -18,13 +18,19 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 
+import javax.swing.plaf.nimbus.State;
 import java.util.Iterator;
 
 public class GameScreen implements Screen {
     final Game game;
     private static final int WIDTH = Gdx.graphics.getWidth();
     private static final int HEIGHT = Gdx.graphics.getHeight();
-
+    public enum State
+    {
+        PAUSE,
+        RUN,
+    }
+    State state;
     Ghost ghost1;
     private boolean gameOver;
     private float timeState;
@@ -58,8 +64,13 @@ public class GameScreen implements Screen {
         wallImage = new Texture(pixmap1);
     }
 
+
+
+
+
     @Override
     public void render(float delta) {
+
         // clear the screen with a dark blue color. The
         // arguments to clear are the red, green
         // blue and alpha component in the range [0,1]
@@ -75,12 +86,21 @@ public class GameScreen implements Screen {
         // all drops
         game.batch.begin();
         drawMap(game.batch);
+        this.state = State.RUN;
 //        ghost1.draw(game.batch);
         game.batch.draw(ghost1.sprite, ghost1.x, ghost1.y, cellW, cellH);
-        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)){
-            pause();
+
+        if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)){
+        pause();
         }
-        update(Gdx.graphics.getDeltaTime());
+
+        switch (this.state) {
+            case RUN:
+                update(Gdx.graphics.getDeltaTime());
+                break;
+            case PAUSE:
+                break;
+        }
 
         game.batch.end();
 
@@ -103,6 +123,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void pause() {
+        this.state = State.PAUSE;
         ScreenUtils.clear(0,0,0.2f, 1);
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
@@ -117,8 +138,6 @@ public class GameScreen implements Screen {
     @Override
     public void dispose() {
 
-//        dropSound.dispose();
-//        rainMusic.dispose();
     }
 
     public void update(float delta){

@@ -34,6 +34,7 @@ public class Ghost extends GameObject{
     }
 
     public void handleEvents() {
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) dir = Direction.UP;
         else if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN))
             dir = Direction.DOWN;
