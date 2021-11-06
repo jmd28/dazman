@@ -12,11 +12,13 @@ import java.util.Stack;
 public class Ghost extends GameObject{
     private final int SCALE = 100;
     private Direction dir; //direction of movement
+    private boolean isGhost;
 //    private Texture texture;
 
-    public Ghost(Sprite sprite, float x, float y) {
+    public Ghost(Sprite sprite, float x, float y, boolean isGhost) {
         super(sprite, x, y);
         this.dir = Direction.RIGHT;
+        this.isGhost = isGhost;
         setSize(SCALE,SCALE);
 //        this.texture = new Texture("jon2.jpg");
         init();
@@ -31,13 +33,24 @@ public class Ghost extends GameObject{
     }
 
     public void handleEvents() {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) dir = Direction.UP;
-        else if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN))
-            dir = Direction.DOWN;
-        else if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT))
-            dir = Direction.LEFT;
-        else if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT))
-            dir = Direction.RIGHT;
+        if(isGhost) {
+            if (Gdx.input.isKeyJustPressed(Input.Keys.W)) dir = Direction.UP;
+            else if (Gdx.input.isKeyJustPressed(Input.Keys.S))
+                dir = Direction.DOWN;
+            else if (Gdx.input.isKeyJustPressed(Input.Keys.A))
+                dir = Direction.LEFT;
+            else if (Gdx.input.isKeyJustPressed(Input.Keys.D))
+                dir = Direction.RIGHT;
+        }
+        else {
+            if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) dir = Direction.UP;
+            else if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN))
+                dir = Direction.DOWN;
+            else if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT))
+                dir = Direction.LEFT;
+            else if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT))
+                dir = Direction.RIGHT;
+        }
     }
 
     public void setDirection(Direction dir) {

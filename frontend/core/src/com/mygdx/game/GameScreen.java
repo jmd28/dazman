@@ -24,6 +24,7 @@ public class GameScreen implements Screen {
     private static final int HEIGHT = Gdx.graphics.getHeight();
 
     Ghost ghost1;
+    Ghost ghost2;
     private boolean gameOver;
     private float timeState;
     OrthographicCamera camera;
@@ -32,8 +33,11 @@ public class GameScreen implements Screen {
 
     public GameScreen(final Game game) {
         this.game = game;
-        Sprite ghostSprite = new Sprite(new Texture("jon2.jpg"));
-        ghost1 = new Ghost(ghostSprite, 100,100);
+        Sprite ghostSprite1 = new Sprite(new Texture("jon2.jpg"));
+        Sprite ghostSprite2 = new Sprite(new Texture("al.jpeg"));
+
+        ghost1 = new Ghost(ghostSprite1, 100,100, false);
+        ghost2 = new Ghost(ghostSprite2, 250,250, true);
         // create the camera and the SpriteBatch
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
@@ -60,6 +64,7 @@ public class GameScreen implements Screen {
         // all drops
         game.batch.begin();
         ghost1.draw(game.batch);
+        ghost2.draw(game.batch);
         update(Gdx.graphics.getDeltaTime());
         game.batch.end();
 
@@ -99,10 +104,12 @@ public class GameScreen implements Screen {
     public void update(float delta){
         timeState+= delta;
         ghost1.handleEvents();
+        ghost2.handleEvents();
         if(timeState >= 0.2){
             //move ghost
 //            ghost1.y -= 200 * Gdx.graphics.getDeltaTime();
             ghost1.move();
+            ghost2.move();
             timeState = 0;
         }
     }
