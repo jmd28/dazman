@@ -27,7 +27,7 @@ public class GameScreen implements Screen {
 
     Ghost ghost1;
     Ghost ghost2;
-    private boolean gameOver;
+    private boolean gameOver = false;
     private float timeState;
     OrthographicCamera camera;
     char[][] mapModel;
@@ -81,12 +81,33 @@ public class GameScreen implements Screen {
         // begin a new batch and draw the bucket and
         // all drops
         game.batch.begin();
+        drawMap(game.batch);
         ghost1.draw(game.batch);
         ghost2.draw(game.batch);
-        drawMap(game.batch);
+
+        for (GameObject life : ghost1.getLives()) {
+            life.draw(game.batch);
+        }
+        for (GameObject life : ghost2.getLives()) {
+            life.draw(game.batch);
+        }
+
+
 //        ghost1.draw(game.batch);
-        game.batch.draw(ghost1.sprite, ghost1.x, ghost1.y, cellW, cellH);
+//        game.batch.draw(ghost1.sprite, ghost1.x, ghost1.y, cellW, cellH);
         update(Gdx.graphics.getDeltaTime());
+        game.batch.end();
+
+        game.batch.begin();
+        if(gameOver) {
+            if(ghost1.isAlive()) {
+                game.batch.draw(new Texture("kasim.jpeg"), 200, 100, 400, 400);
+            }
+            if(ghost2.isAlive()) {
+                game.batch.draw(new Texture("saleem.jpeg"), 200, 100, 400, 400);
+            }
+            // image of
+        }
         game.batch.end();
 
 
@@ -123,15 +144,34 @@ public class GameScreen implements Screen {
     }
 
     public void update(float delta){
-        timeState+= delta;
-        ghost1.handleEvents();
-        ghost2.handleEvents();
-        if(timeState >= 0.02){
-            //move ghost
+        // game continues
+        if(ghost1.isAlive() && ghost2.isAlive()) {
+            timeState += delta;
+            ghost1.handleEvents();
+            ghost2.handleEvents();
+            if (ghost1.isCollide(ghost2)) {
+                if (!ghost1.getIsChaser()) {
+                    ghost1.takeLife();
+                    // -1 life of ghost1
+                } else if (!ghost2.getIsChaser()) {
+                    ghost2.takeLife();
+                    //-1 life of ghost2
+                }
+                ghost1.setPosition(100, 100);
+                ghost2.setPosition(100, 400);
+            }
+
+            if (timeState >= 0.02) {
+
+                //move ghost
 //            ghost1.y -= 200 * Gdx.graphics.getDeltaTime();
-            ghost1.move();
-            ghost2.move();
-            timeState = 0;
+                ghost1.move();
+                ghost2.move();
+                timeState = 0;
+            }
+        } // game continues
+        else{
+            gameOver = true;
         }
     }
 
