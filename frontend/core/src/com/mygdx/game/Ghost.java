@@ -6,27 +6,58 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import sun.jvm.hotspot.debugger.win32.coff.TestDebugInfo;
 
 import java.util.Stack;
 
 public class Ghost extends GameObject{
     private final int SCALE = 100;
     private final int VELOCITY = 5;
+    private Stack<GameObject> lives;
     private Direction dir; //direction of movement
-    private boolean isGhost;
+    private boolean isChaser;
+    private int offsetLives;
 //    private Texture texture;
 
     public Ghost(Sprite sprite, float x, float y, boolean isGhost) {
         super(sprite, x, y);
+        if(isGhost) {
+            this.offsetLives = 20;
+        }
+        else {
+            this.offsetLives = 40;
+        }
+
+        lives = new Stack<GameObject>();
         this.dir = Direction.RIGHT;
-        this.isGhost = isGhost;
+        this.isChaser = isGhost;
         setSize(SCALE,SCALE);
 //        this.texture = new Texture("jon2.jpg");
-        init();
+        restoreHealth();
     }
 
-    private void init(){
+    public void restoreHealth() {
+        for (int i = 0; i < 5; i++) {
+            GameObject life = new GameObject(new Sprite(new Texture("tom.jpeg")), 10 + i*35, 10+ offsetLives);
+            life.setSize(25, 25);
+            lives.add(life);
+        }
+    }
 
+    public void takeLife() {
+        lives.pop();
+    }
+
+    public boolean isAlive() {
+        return !lives.isEmpty();
+    }
+
+    public boolean getIsChaser() {
+        return isChaser;
+    }
+
+    public Stack<GameObject> getLives() {
+        return lives;
     }
 
     public void move(){
@@ -34,7 +65,7 @@ public class Ghost extends GameObject{
     }
 
     public void handleEvents() {
-        if(isGhost) {
+        if(isChaser) {
             if (Gdx.input.isKeyJustPressed(Input.Keys.W)) dir = Direction.UP;
             else if (Gdx.input.isKeyJustPressed(Input.Keys.S))
                 dir = Direction.DOWN;
