@@ -16,18 +16,19 @@ public class Ghost extends GameObject{
     private Stack<GameObject> lives;
     private Direction dir; //direction of movement
     private boolean isChaser;
+    private boolean isWASD;
     private int offsetLives;
 //    private Texture texture;
 
     public Ghost(Sprite sprite, float x, float y, boolean isGhost) {
         super(sprite, x, y);
         if(isGhost) {
-            this.offsetLives = 20;
+            this.offsetLives = 300;
         }
         else {
-            this.offsetLives = 40;
+            this.offsetLives = 0;
         }
-
+        this.isWASD = isGhost;
         lives = new Stack<GameObject>();
         this.dir = Direction.RIGHT;
         this.isChaser = isGhost;
@@ -38,10 +39,14 @@ public class Ghost extends GameObject{
 
     public void restoreHealth() {
         for (int i = 0; i < 5; i++) {
-            GameObject life = new GameObject(new Sprite(new Texture("tom.jpeg")), 10 + i*35, 10+ offsetLives);
+            GameObject life = new GameObject(new Sprite(new Texture("tom.jpeg")), 10 + i*35 + offsetLives, 0);
             life.setSize(25, 25);
             lives.add(life);
         }
+    }
+
+    public void setChaser(boolean isChaser) {
+        this.isChaser = isChaser;
     }
 
     public void takeLife() {
@@ -65,7 +70,7 @@ public class Ghost extends GameObject{
     }
 
     public void handleEvents() {
-        if(isChaser) {
+        if(isWASD) {
             if (Gdx.input.isKeyJustPressed(Input.Keys.W)) dir = Direction.UP;
             else if (Gdx.input.isKeyJustPressed(Input.Keys.S))
                 dir = Direction.DOWN;

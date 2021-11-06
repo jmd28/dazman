@@ -27,6 +27,7 @@ public class GameScreen implements Screen {
 
     Ghost ghost1;
     Ghost ghost2;
+    GameObject food;
     private boolean gameOver = false;
     private float timeState;
     OrthographicCamera camera;
@@ -40,7 +41,10 @@ public class GameScreen implements Screen {
         this.game = game;
         Sprite ghostSprite1 = new Sprite(new Texture("jon2.jpg"));
         Sprite ghostSprite2 = new Sprite(new Texture("al.jpeg"));
+        Sprite foodSprite = new Sprite(new Texture("Map Sprites/coffeeCup.png"));
 
+        food = new GameObject(foodSprite, cellW+25, cellH+25);
+        food.setSize(25,25);
         ghost1 = new Ghost(ghostSprite1, 100,100, false);
         ghost2 = new Ghost(ghostSprite2, 250,250, true);
 
@@ -84,6 +88,8 @@ public class GameScreen implements Screen {
         drawMap(game.batch);
         ghost1.draw(game.batch);
         ghost2.draw(game.batch);
+        food.draw(game.batch);
+
 
         for (GameObject life : ghost1.getLives()) {
             life.draw(game.batch);
@@ -160,6 +166,15 @@ public class GameScreen implements Screen {
                 ghost1.setPosition(100, 100);
                 ghost2.setPosition(100, 400);
             }
+            if (ghost1.isCollide(food) && !ghost1.getIsChaser()) {
+                ghost1.setChaser(true);
+                ghost2.setChaser(false);
+            }
+            if (ghost2.isCollide(food) && !ghost2.getIsChaser()) {
+                ghost2.setChaser(true);
+                ghost1.setChaser(false);
+            }
+
 
             if (timeState >= 0.02) {
 
