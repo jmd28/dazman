@@ -2,6 +2,7 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.Texture;
 
 public class GameObject {
     protected Sprite sprite;
@@ -25,6 +26,11 @@ public class GameObject {
         this.x = x;
         this.y = y;
         sprite.setPosition(x,y);
+    }
+
+    public void changeSprite(String filename) {
+        Sprite change = new Sprite(new Texture(filename));
+        sprite.set(change);
     }
 
     public void draw(SpriteBatch batch) {

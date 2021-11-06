@@ -49,7 +49,7 @@ public class GameScreen implements Screen {
     public GameScreen(final Game game) {
         this.game = game;
         Sprite ghostSprite1 = new Sprite(new Texture("jon2.jpg"));
-        Sprite ghostSprite2 = new Sprite(new Texture("al.jpeg"));
+        Sprite ghostSprite2 = new Sprite(new Texture("alIn.jpeg"));
         Sprite foodSprite = new Sprite(new Texture("Map Sprites/coffeeCup.png"));
 
 
@@ -57,7 +57,8 @@ public class GameScreen implements Screen {
         food.setSize(25,25);
         ghost1 = new Ghost(ghostSprite1, 100,100, false);
         ghost2 = new Ghost(ghostSprite2, 250,250, true);
-
+        ghost1.setSize(cellW, cellH);
+        ghost2.setSize(cellW, cellH);
         // create the camera and the SpriteBatch
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
@@ -69,7 +70,7 @@ public class GameScreen implements Screen {
         ghost1 = new Ghost(ghostSprite1, cellW,cellH, false);
         ghost2 = new Ghost(ghostSprite2, cellW*(mapModel[0].length-2),cellH* (mapModel.length-2), true);
 
-        Sprite ghostSprite = new Sprite(new Texture("jon2.jpg"));
+//        Sprite ghostSprite = new Sprite(new Texture("jon2.jpg"));
         System.out.println(mapModel[0].length);
         System.out.println(mapModel.length);
         //ghost1 = new Ghost(ghostSprite,
@@ -107,10 +108,9 @@ public class GameScreen implements Screen {
         // all drops
         game.batch.begin();
         drawMap(game.batch);
-        game.batch.draw(ghost1.sprite, ghost1.x, ghost1.y, (int)(cellW*.8), (int)(cellH));
-        game.batch.draw(ghost2.sprite, ghost2.x, ghost2.y, (int)(cellW*.8), (int)(cellH));
+        game.batch.draw(ghost1.sprite, ghost1.x, ghost1.y, ghost1.getWidth(),ghost1.getHeight());
+        game.batch.draw(ghost2.sprite, ghost2.x, ghost2.y, ghost1.getWidth(),ghost1.getHeight());
         food.draw(game.batch);
-
 
         this.state = State.RUN;
 //        ghost1.draw(game.batch);
@@ -219,16 +219,16 @@ public class GameScreen implements Screen {
             if (ghost1.isCollide(food) && !ghost1.getIsChaser()) {
                 int x = r.nextInt(mapModel[0].length-2);
                 int y = r.nextInt(2)==1 ? mapModel.length-2 : 1;
-                food.setPosition(x*cellW+1, y*cellH);
-                ghost1.setChaser(true);
-                ghost2.setChaser(false);
+                food.setPosition((x+1)*cellW, y*cellH);
+                ghost1.setChaser(true, "jon2In.jpg");
+                ghost2.setChaser(false, "al.jpeg");
             }
             if (ghost2.isCollide(food) && !ghost2.getIsChaser()) {
                 int x = r.nextInt(mapModel[0].length);
                 int y = r.nextInt(2)==1 ? mapModel.length-2 : 1;
                 food.setPosition(x*cellW, y*cellH);
-                ghost2.setChaser(true);
-                ghost1.setChaser(false);
+                ghost2.setChaser(true, "jon2.jpg");
+                ghost1.setChaser(false, "alIn.jpeg");
             }
 
 

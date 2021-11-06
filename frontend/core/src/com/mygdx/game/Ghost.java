@@ -51,8 +51,9 @@ public class Ghost extends GameObject{
         }
     }
 
-    public void setChaser(boolean isChaser) {
+    public void setChaser(boolean isChaser, String filename) {
         this.isChaser = isChaser;
+        this.changeSprite(filename);
     }
 
     public void takeLife() {
