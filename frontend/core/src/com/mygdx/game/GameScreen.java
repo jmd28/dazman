@@ -7,7 +7,9 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
@@ -28,8 +30,11 @@ public class GameScreen implements Screen {
     private boolean gameOver;
     private float timeState;
     OrthographicCamera camera;
-
-    Array<Rectangle> map;
+    char[][] mapModel;
+    Texture wallImage;
+    int cellW;
+    int cellH;
+//    Array<Rectangle> map;
 
     public GameScreen(final Game game) {
         this.game = game;
@@ -38,10 +43,25 @@ public class GameScreen implements Screen {
 
         ghost1 = new Ghost(ghostSprite1, 100,100, false);
         ghost2 = new Ghost(ghostSprite2, 250,250, true);
+
         // create the camera and the SpriteBatch
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
 
+        mapModel = new Map().generate(5,9);
+        cellW = (int) camera.viewportWidth / mapModel[0].length;
+        cellH = (int) camera.viewportHeight / mapModel.length;
+
+        Sprite ghostSprite = new Sprite(new Texture("jon2.jpg"));
+        ghost1 = new Ghost(ghostSprite, 100,100);
+        Pixmap pixmap2 = new Pixmap(Gdx.files.internal("Map Sprites/csBlueDark.png"));
+        Pixmap pixmap1 = new Pixmap(cellW, cellH, pixmap2.getFormat());
+        pixmap1.drawPixmap(pixmap2,
+                0, 0, pixmap2.getWidth(), pixmap2.getHeight(),
+                0, 0, pixmap1.getWidth(), pixmap1.getHeight()
+        );
+
+        wallImage = new Texture(pixmap1);
     }
 
     @Override
@@ -65,6 +85,9 @@ public class GameScreen implements Screen {
         game.batch.begin();
         ghost1.draw(game.batch);
         ghost2.draw(game.batch);
+        drawMap(game.batch);
+//        ghost1.draw(game.batch);
+        game.batch.draw(ghost1.sprite, ghost1.x, ghost1.y, cellW, cellH);
         update(Gdx.graphics.getDeltaTime());
         game.batch.end();
 
@@ -105,7 +128,7 @@ public class GameScreen implements Screen {
         timeState+= delta;
         ghost1.handleEvents();
         ghost2.handleEvents();
-        if(timeState >= 0.2){
+        if(timeState >= 0.02){
             //move ghost
 //            ghost1.y -= 200 * Gdx.graphics.getDeltaTime();
             ghost1.move();
@@ -114,4 +137,32 @@ public class GameScreen implements Screen {
         }
     }
 
+
+
+
+
+
+
+
+
+
+    private void drawMap(Batch batch) {
+
+//        mapGrid = new Array<>();
+        Array<Rectangle> walls = new Array<>();
+        float squareWidth = camera.viewportWidth / mapModel[0].length;
+        float squareHeight = camera.viewportHeight / mapModel.length;
+
+        for (int i = 0; i< mapModel.length; i++) {
+            for (int j = 0; j<mapModel[0].length; j++) {
+                if  (mapModel[i][j]==Tetris.WALL) {
+                    Rectangle wall = new Rectangle();
+                    wall.setWidth(squareWidth);
+                    wall.setHeight(squareHeight);
+                    batch.draw(wallImage,j*squareWidth, i*squareHeight);
+                }
+            }
+        }
+
+    }
 }

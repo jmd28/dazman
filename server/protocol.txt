@@ -1,0 +1,38 @@
+Definition of the protocol
+
+# discovery and game lobbies
+
+- server has many lobbies
+
+lobbies: [{lobby}]
+
+- client can create lobby
+
+command: newLobby
+
+- server resp with lobbyId
+
+command: newLobby: lobbyId
+
+- a client connects to the main server on the tcp port, and the server sends open lobbies to client
+
+lobby: {command: "connect", "lobbyId", "name", "playerCount", "playerMax", port: port}
+
+- client sends a join request to join a lobby
+
+command: join: "lobbyId"
+
+- server repsonds with
+
+command: join: accepted: {lobbyId, lobbyDetails}
+
+# host starts game
+command: startGame
+
+# server sends start to all clients
+
+## game is started
+
+move to game logic...
+
+# send movement, send pickups, send position?
