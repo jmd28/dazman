@@ -26,7 +26,8 @@ public class GameScreen implements Screen {
     private static final int HEIGHT = Gdx.graphics.getHeight();
 
     Ghost ghost1;
-    private boolean gameOver;
+    Ghost ghost2;
+    private boolean gameOver = false;
     private float timeState;
     OrthographicCamera camera;
     static char[][] mapModel;
@@ -37,6 +38,11 @@ public class GameScreen implements Screen {
 
     public GameScreen(final Game game) {
         this.game = game;
+        Sprite ghostSprite1 = new Sprite(new Texture("jon2.jpg"));
+        Sprite ghostSprite2 = new Sprite(new Texture("al.jpeg"));
+
+
+
         // create the camera and the SpriteBatch
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
@@ -45,13 +51,16 @@ public class GameScreen implements Screen {
         cellW = (int) camera.viewportWidth / mapModel[0].length;
         cellH = (int) camera.viewportHeight / mapModel.length;
 
+        ghost1 = new Ghost(ghostSprite1, cellW,cellH, false);
+        ghost2 = new Ghost(ghostSprite2, cellW*(mapModel[0].length-2),cellH* (mapModel.length-2), true);
+
         Sprite ghostSprite = new Sprite(new Texture("jon2.jpg"));
         System.out.println(mapModel[0].length);
         System.out.println(mapModel.length);
-        ghost1 = new Ghost(ghostSprite,
+        //ghost1 = new Ghost(ghostSprite,
                 //cellW*mapModel[0].length/2 - cellW/2,cellH*(mapModel.length/2-1));
-                cellW,cellH);
-                Pixmap pixmap2 = new Pixmap(Gdx.files.internal("Map Sprites/csBlueDark.png"));
+        //        cellW,cellH, true);
+        Pixmap pixmap2 = new Pixmap(Gdx.files.internal("Map Sprites/csBlueDark.png"));
         Pixmap pixmap1 = new Pixmap(cellW, cellH, pixmap2.getFormat());
         pixmap1.drawPixmap(pixmap2,
                 0, 0, pixmap2.getWidth(), pixmap2.getHeight(),
@@ -81,10 +90,35 @@ public class GameScreen implements Screen {
         // all drops
         game.batch.begin();
         drawMap(game.batch);
-//        ghost1.draw(game.batch);
         game.batch.draw(ghost1.sprite, ghost1.x, ghost1.y, (int)(cellW*.8), (int)(cellH));
+        game.batch.draw(ghost2.sprite, ghost2.x, ghost2.y, (int)(cellW*.8), (int)(cellH));
+
+        for (GameObject life : ghost1.getLives()) {
+            life.draw(game.batch);
+        }
+        for (GameObject life : ghost2.getLives()) {
+            life.draw(game.batch);
+        }
+
+
+//        ghost1.draw(game.batch);
+        //game.batch.draw(ghost1.sprite, ghost1.x, ghost1.y, (int)(cellW*.8), (int)(cellH));
+
         update(Gdx.graphics.getDeltaTime());
         game.batch.end();
+
+        game.batch.begin();
+        if(gameOver) {
+            if(ghost1.isAlive()) {
+                game.batch.draw(new Texture("kasim.jpeg"), 200, 100, 400, 400);
+            }
+            if(ghost2.isAlive()) {
+                game.batch.draw(new Texture("saleem.jpeg"), 200, 100, 400, 400);
+            }
+            // image of
+        }
+        game.batch.end();
+
     }
 
     @Override
@@ -118,13 +152,34 @@ public class GameScreen implements Screen {
     }
 
     public void update(float delta){
-        timeState+= delta;
-        ghost1.handleEvents();
-        if(timeState >= 0.02){
-            //move ghost
+        // game continues
+        if(ghost1.isAlive() && ghost2.isAlive()) {
+            timeState += delta;
+            ghost1.handleEvents();
+            ghost2.handleEvents();
+            if (ghost1.isCollide(ghost2)) {
+                if (!ghost1.getIsChaser()) {
+                    ghost1.takeLife();
+                    // -1 life of ghost1
+                } else if (!ghost2.getIsChaser()) {
+                    ghost2.takeLife();
+                    //-1 life of ghost2
+                }
+                ghost1.setPosition(cellW,cellH);
+                ghost2.setPosition(cellW*(mapModel[0].length-2),cellH* (mapModel.length-2));
+            }
+
+            if (timeState >= 0.02) {
+
+                //move ghost
 //            ghost1.y -= 200 * Gdx.graphics.getDeltaTime();
-            ghost1.move();
-            timeState = 0;
+                ghost1.move();
+                ghost2.move();
+                timeState = 0;
+            }
+        } // game continues
+        else{
+            gameOver = true;
         }
     }
 

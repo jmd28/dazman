@@ -36,6 +36,13 @@ public class GameObject {
         sprite.setSize(width, height);
     }
 
+    public boolean isCollide(GameObject object) {
+        return x < object.x + object.getWidth() &&
+                x + getWidth() > object.x &&
+                y < object.y + object.getHeight() &&
+                y + getHeight() > object.y;
+    }
+
     public float getWidth() {
         return sprite.getWidth();
     }
