@@ -29,10 +29,10 @@ public class Ghost extends GameObject{
     public Ghost(Sprite sprite, int x, int y, boolean isGhost) {
         super(sprite, x, y);
         if(isGhost) {
-            this.offsetLives = 300;
+            this.offsetLives = 350;
         }
         else {
-            this.offsetLives = 0;
+            this.offsetLives = 50;
         }
         this.isWASD = isGhost;
         lives = new Stack<GameObject>();
@@ -51,8 +51,11 @@ public class Ghost extends GameObject{
         }
     }
 
-    public void setChaser(boolean isChaser) {
+    public void setChaser(boolean isChaser, String filename) {
         this.isChaser = isChaser;
+        Sprite changed = new Sprite(new Texture(filename));
+        changed.setSize((int)(cellW*.8), (int)(cellH));
+        this.sprite.set(changed);
     }
 
     public void takeLife() {

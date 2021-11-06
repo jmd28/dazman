@@ -48,15 +48,15 @@ public class GameScreen implements Screen {
 
     public GameScreen(final Game game) {
         this.game = game;
-        Sprite ghostSprite1 = new Sprite(new Texture("jon2.jpg"));
+        Sprite ghostSprite1 = new Sprite(new Texture("jon2In.jpg"));
         Sprite ghostSprite2 = new Sprite(new Texture("al.jpeg"));
         Sprite foodSprite = new Sprite(new Texture("Map Sprites/coffeeCup.png"));
 
 
         food = new GameObject(foodSprite, cellW+25, cellH+25);
         food.setSize(25,25);
-        ghost1 = new Ghost(ghostSprite1, 100,100, false);
-        ghost2 = new Ghost(ghostSprite2, 250,250, true);
+        ghost1 = new Ghost(ghostSprite1, 100,100, true);
+        ghost2 = new Ghost(ghostSprite2, 250,250, false);
 
         // create the camera and the SpriteBatch
         camera = new OrthographicCamera();
@@ -69,7 +69,7 @@ public class GameScreen implements Screen {
         ghost1 = new Ghost(ghostSprite1, cellW,cellH, false);
         ghost2 = new Ghost(ghostSprite2, cellW*(mapModel[0].length-2),cellH* (mapModel.length-2), true);
 
-        Sprite ghostSprite = new Sprite(new Texture("jon2.jpg"));
+//        Sprite ghostSprite = new Sprite(new Texture("jon2.jpg"));
         System.out.println(mapModel[0].length);
         System.out.println(mapModel.length);
         //ghost1 = new Ghost(ghostSprite,
@@ -127,7 +127,14 @@ public class GameScreen implements Screen {
                 ghost2.draw(game.batch);
                 food.draw(game.batch);
 
-
+                Sprite indicateJon = new Sprite(new Texture("jon2.jpg"));
+                Sprite indicateAl = new Sprite(new Texture("al.jpeg"));
+                indicateAl.setSize(cellW, cellH);
+                indicateJon.setSize(cellW, cellH);
+                GameObject jonLives = new GameObject(indicateJon, 280, 0);
+                jonLives.draw(game.batch);
+                GameObject alLives = new GameObject(indicateAl, 0, 0);
+                alLives.draw(game.batch);
                 for (GameObject life : ghost1.getLives()) {
                     life.draw(game.batch);
                 }
@@ -220,15 +227,15 @@ public class GameScreen implements Screen {
                 int x = r.nextInt(mapModel[0].length-2);
                 int y = r.nextInt(2)==1 ? mapModel.length-2 : 1;
                 food.setPosition(x*cellW+1, y*cellH);
-                ghost1.setChaser(true);
-                ghost2.setChaser(false);
+                ghost1.setChaser(true, "jon2In.jpg");
+                ghost2.setChaser(false, "al.jpeg");
             }
             if (ghost2.isCollide(food) && !ghost2.getIsChaser()) {
                 int x = r.nextInt(mapModel[0].length-2);
                 int y = r.nextInt(2)==1 ? mapModel.length-2 : 1;
                 food.setPosition((x+1)*cellW, y*cellH);
-                ghost2.setChaser(true);
-                ghost1.setChaser(false);
+                ghost2.setChaser(true, "alIn.jpeg");
+                ghost1.setChaser(false, "jon2.jpg");
             }
 
 

@@ -1,7 +1,5 @@
 package com.mygdx.game;
 
-import sun.jvm.hotspot.debugger.linux.LinuxDebugger;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

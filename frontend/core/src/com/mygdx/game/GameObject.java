@@ -27,6 +27,8 @@ public class GameObject {
         sprite.setPosition(x,y);
     }
 
+
+
     public void draw(SpriteBatch batch) {
         sprite.setPosition(x, y);
         sprite.draw(batch);
