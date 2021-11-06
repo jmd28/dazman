@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.MathUtils;
@@ -22,6 +23,7 @@ public class GameScreen implements Screen {
 
      Texture dropImage;
     Texture bucketImage;
+    Texture wallImage;
 //    Sound dropSound;
 //    Music rainMusic;
     OrthographicCamera camera;
@@ -37,9 +39,9 @@ public class GameScreen implements Screen {
         this.game = game;
 
         // load the images for the droplet and the bucket, 64x64 pixels each
-        dropImage = new Texture(Gdx.files.internal("../../../sprites/steve.jpeg"));
-        bucketImage = new Texture(Gdx.files.internal("../../../sprites/jon2.jpg"));
-        wallImage = new Texture(Gdx.files.internal("../../../sprites/jon2.jpg"));
+        dropImage = new Texture(Gdx.files.internal("steve.jpeg"));
+        bucketImage = new Texture(Gdx.files.internal("jon2.jpg"));
+
 
         // load the drop sound effect and the rain background "music"
 //        dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
@@ -60,6 +62,17 @@ public class GameScreen implements Screen {
 
         Map map = new Map();
         mapModel = map.generate(5,9);
+        int cellW = (int) camera.viewportWidth / mapModel[0].length;
+        int cellH = (int) camera.viewportHeight / mapModel.length;
+
+        Pixmap pixmap2 = new Pixmap(Gdx.files.internal("Map Sprites/csBlueDark.png"));
+        Pixmap pixmap1 = new Pixmap(cellW, cellH, pixmap2.getFormat());
+        pixmap1.drawPixmap(pixmap2,
+                0, 0, pixmap2.getWidth(), pixmap2.getHeight(),
+                0, 0, pixmap1.getWidth(), pixmap1.getHeight()
+        );
+
+        wallImage = new Texture(pixmap1);
 
         // create the raindrops array and spawn the first raindrop
         raindrops = new Array<>();
@@ -80,19 +93,11 @@ public class GameScreen implements Screen {
                     Rectangle wall = new Rectangle();
                     wall.setWidth(squareWidth);
                     wall.setHeight(squareHeight);
-
-                    batch.draw(wallimg,(int) j*squareWidth, (int) i*squareHeight);
+                    batch.draw(wallImage,j*squareWidth, i*squareHeight);
                 }
             }
         }
 
-        Rectangle raindrop = new Rectangle();
-        raindrop.x = MathUtils.random(cellSize);
-        raindrop.y = 480;
-        raindrop.width = cellSize;
-        raindrop.height = cellSize;
-        raindrops.add(raindrop);
-        lastDropTime = TimeUtils.nanoTime();
     }
 
     private void spawnRaindrop() {
