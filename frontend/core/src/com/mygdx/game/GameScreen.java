@@ -98,7 +98,7 @@ public class GameScreen implements Screen {
 
         this.state = State.RUN;
 //        ghost1.draw(game.batch);
-        game.batch.draw(ghost1.sprite, ghost1.x, ghost1.y, cellW, cellH);
+//        game.batch.draw(ghost1.sprite, ghost1.x, ghost1.y, cellW, cellH);
 
         if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)){
         pause();
@@ -106,28 +106,28 @@ public class GameScreen implements Screen {
 
         switch (this.state) {
             case RUN:
+
+                ghost1.draw(game.batch);
+                ghost2.draw(game.batch);
+                food.draw(game.batch);
+
+
+                for (GameObject life : ghost1.getLives()) {
+                    life.draw(game.batch);
+                }
+                for (GameObject life : ghost2.getLives()) {
+                    life.draw(game.batch);
+                }
+
+
+//        ghost1.draw(game.batch);
+//        game.batch.draw(ghost1.sprite, ghost1.x, ghost1.y, cellW, cellH);
                 update(Gdx.graphics.getDeltaTime());
                 break;
             case PAUSE:
                 break;
         }
 
-        ghost1.draw(game.batch);
-        ghost2.draw(game.batch);
-        food.draw(game.batch);
-
-
-        for (GameObject life : ghost1.getLives()) {
-            life.draw(game.batch);
-        }
-        for (GameObject life : ghost2.getLives()) {
-            life.draw(game.batch);
-        }
-
-
-//        ghost1.draw(game.batch);
-//        game.batch.draw(ghost1.sprite, ghost1.x, ghost1.y, cellW, cellH);
-        update(Gdx.graphics.getDeltaTime());
         game.batch.end();
 
         game.batch.begin();
