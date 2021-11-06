@@ -27,6 +27,7 @@ public class GameScreen implements Screen {
 
     Ghost ghost1;
     Ghost ghost2;
+    GameObject food;
     private boolean gameOver = false;
     private float timeState;
     OrthographicCamera camera;
@@ -40,8 +41,13 @@ public class GameScreen implements Screen {
         this.game = game;
         Sprite ghostSprite1 = new Sprite(new Texture("jon2.jpg"));
         Sprite ghostSprite2 = new Sprite(new Texture("al.jpeg"));
+        Sprite foodSprite = new Sprite(new Texture("Map Sprites/coffeeCup.png"));
 
 
+        food = new GameObject(foodSprite, cellW+25, cellH+25);
+        food.setSize(25,25);
+        ghost1 = new Ghost(ghostSprite1, 100,100, false);
+        ghost2 = new Ghost(ghostSprite2, 250,250, true);
 
         // create the camera and the SpriteBatch
         camera = new OrthographicCamera();
@@ -92,6 +98,8 @@ public class GameScreen implements Screen {
         drawMap(game.batch);
         game.batch.draw(ghost1.sprite, ghost1.x, ghost1.y, (int)(cellW*.8), (int)(cellH));
         game.batch.draw(ghost2.sprite, ghost2.x, ghost2.y, (int)(cellW*.8), (int)(cellH));
+        food.draw(game.batch);
+
 
         for (GameObject life : ghost1.getLives()) {
             life.draw(game.batch);
@@ -168,6 +176,15 @@ public class GameScreen implements Screen {
                 ghost1.setPosition(cellW,cellH);
                 ghost2.setPosition(cellW*(mapModel[0].length-2),cellH* (mapModel.length-2));
             }
+            if (ghost1.isCollide(food) && !ghost1.getIsChaser()) {
+                ghost1.setChaser(true);
+                ghost2.setChaser(false);
+            }
+            if (ghost2.isCollide(food) && !ghost2.getIsChaser()) {
+                ghost2.setChaser(true);
+                ghost1.setChaser(false);
+            }
+
 
             if (timeState >= 0.02) {
 
