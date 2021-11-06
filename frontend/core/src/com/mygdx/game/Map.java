@@ -3,7 +3,7 @@ package com.mygdx.game;
 public class Map {
 
     Tetris model;
-//    char[][] map;
+    char[][] map;
 
     void draw(char[][] cells) {
         // print cells
@@ -16,16 +16,19 @@ public class Map {
     }
 
     char[][] generate(int w, int h) {
-        Tetris tetris = new Tetris();
-        tetris.init(5,9);
-        tetris.genModel();
-        tetris.printModel();
+        model = new Tetris();
+        model.init(5,9);
+        model.genModel();
+        model.printModel();
 
         // convert model to actual map
-        char[][] cells = tetris.upscale();
-        char[][] mirror = tetris.mirrorred(cells);
-        char[][] tunnelled = tetris.tunnelled(mirror);
+        char[][] cells = model.upscale();
+        char[][] mirror = model.mirrorred(cells);
+        char[][] tunnelled = model.tunnelled(mirror);
+
+        // give result
         draw(tunnelled);
+        map = tunnelled;
         return tunnelled;
     }
 

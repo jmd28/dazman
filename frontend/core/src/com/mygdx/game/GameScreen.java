@@ -4,10 +4,9 @@ package com.mygdx.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
@@ -15,6 +14,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 
+import java.util.Arrays;
 import java.util.Iterator;
 
 public class GameScreen implements Screen {
@@ -29,7 +29,9 @@ public class GameScreen implements Screen {
     Array<Rectangle> raindrops;
     long lastDropTime;
     int dropsGathered;
-    Array<Rectangle> map;
+
+    char[][] mapModel;
+    Array<Rectangle> mapGrid;
 
     public GameScreen(final Game game) {
         this.game = game;
@@ -37,6 +39,7 @@ public class GameScreen implements Screen {
         // load the images for the droplet and the bucket, 64x64 pixels each
         dropImage = new Texture(Gdx.files.internal("../../../sprites/steve.jpeg"));
         bucketImage = new Texture(Gdx.files.internal("../../../sprites/jon2.jpg"));
+        wallImage = new Texture(Gdx.files.internal("../../../sprites/jon2.jpg"));
 
         // load the drop sound effect and the rain background "music"
 //        dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
@@ -55,11 +58,41 @@ public class GameScreen implements Screen {
         bucket.width = 226;
         bucket.height = 300;
 
+        Map map = new Map();
+        mapModel = map.generate(5,9);
+
         // create the raindrops array and spawn the first raindrop
         raindrops = new Array<>();
         spawnRaindrop();
 
+    }
 
+    private void drawMap(Batch batch) {
+
+//        mapGrid = new Array<>();
+        Array<Rectangle> walls = new Array<>();
+        float squareWidth = camera.viewportWidth / mapModel[0].length;
+        float squareHeight = camera.viewportHeight / mapModel.length;
+
+        for (int i = 0; i< mapModel.length; i++) {
+            for (int j = 0; j<mapModel[0].length; j++) {
+                if  (mapModel[i][j]==Tetris.WALL) {
+                    Rectangle wall = new Rectangle();
+                    wall.setWidth(squareWidth);
+                    wall.setHeight(squareHeight);
+
+                    batch.draw(wallimg,(int) j*squareWidth, (int) i*squareHeight);
+                }
+            }
+        }
+
+        Rectangle raindrop = new Rectangle();
+        raindrop.x = MathUtils.random(cellSize);
+        raindrop.y = 480;
+        raindrop.width = cellSize;
+        raindrop.height = cellSize;
+        raindrops.add(raindrop);
+        lastDropTime = TimeUtils.nanoTime();
     }
 
     private void spawnRaindrop() {
@@ -74,6 +107,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
+
         // clear the screen with a dark blue color. The
         // arguments to clear are the red, green
         // blue and alpha component in the range [0,1]
@@ -90,11 +124,13 @@ public class GameScreen implements Screen {
         // begin a new batch and draw the bucket and
         // all drops
         game.batch.begin();
+
 //        game.font.draw(game.batch, "Drops Collected: " + dropsGathered, 0, 480);
         game.batch.draw(bucketImage, bucket.x, bucket.y, bucket.width, bucket.height);
         for (Rectangle raindrop : raindrops) {
             game.batch.draw(dropImage, raindrop.x, raindrop.y);
         }
+        drawMap(game.batch);
         game.batch.end();
 
         // process user input

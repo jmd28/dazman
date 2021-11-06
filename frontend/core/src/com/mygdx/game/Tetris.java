@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 class Cell {
 
@@ -57,8 +55,8 @@ public class Tetris {
 
     private Cell[][] chimney;
 
-    final char PATH = '•';
-    final char WALL = '█';
+    public static final char PATH = '•';
+    public static final char WALL = '█';
 
 
     void init() {
