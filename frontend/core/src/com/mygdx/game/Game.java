@@ -15,9 +15,8 @@ public class Game extends com.badlogic.gdx.Game {
 	public void create () {
 		batch = new SpriteBatch();
 
-
 //		img = new Texture("badlogic.jpg");
-		this.setScreen(new GameScreen(this));
+		this.setScreen(new StartGame(this));
 	}
 
 	@Override
@@ -27,6 +26,7 @@ public class Game extends com.badlogic.gdx.Game {
 //		batch.begin();
 //		batch.draw(img, 0, 0);
 //		batch.end();
+
 		super.render();
 	}
 

@@ -18,13 +18,20 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 
+import javax.swing.plaf.nimbus.State;
 import java.util.Iterator;
+import java.util.Random;
 
 public class GameScreen implements Screen {
     final Game game;
     private static final int WIDTH = Gdx.graphics.getWidth();
     private static final int HEIGHT = Gdx.graphics.getHeight();
-
+    public enum State
+    {
+        PAUSE,
+        RUN,
+    }
+    State state;
     Ghost ghost1;
     Ghost ghost2;
     GameObject food;
@@ -35,6 +42,8 @@ public class GameScreen implements Screen {
     Texture wallImage;
     static int cellW;
     static int cellH;
+
+    Texture bucketImage;
 //    Array<Rectangle> map;
 
     public GameScreen(final Game game) {
@@ -53,7 +62,7 @@ public class GameScreen implements Screen {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
 
-        mapModel = new Map().generate(5,9);
+        genNewMap();
         cellW = (int) camera.viewportWidth / mapModel[0].length;
         cellH = (int) camera.viewportHeight / mapModel.length;
 
@@ -76,8 +85,13 @@ public class GameScreen implements Screen {
         wallImage = new Texture(pixmap1);
     }
 
+
+
+
+
     @Override
     public void render(float delta) {
+
         // clear the screen with a dark blue color. The
         // arguments to clear are the red, green
         // blue and alpha component in the range [0,1]
@@ -86,12 +100,9 @@ public class GameScreen implements Screen {
 
         // tell the camera to update its matrices.
         camera.update();
-
-
         // tell the SpriteBatch to render in the
         // coordinate system specified by the camera.
         game.batch.setProjectionMatrix(camera.combined);
-
         // begin a new batch and draw the bucket and
         // all drops
         game.batch.begin();
@@ -101,18 +112,37 @@ public class GameScreen implements Screen {
         food.draw(game.batch);
 
 
-        for (GameObject life : ghost1.getLives()) {
-            life.draw(game.batch);
-        }
-        for (GameObject life : ghost2.getLives()) {
-            life.draw(game.batch);
-        }
-
-
+        this.state = State.RUN;
 //        ghost1.draw(game.batch);
-        //game.batch.draw(ghost1.sprite, ghost1.x, ghost1.y, (int)(cellW*.8), (int)(cellH));
+//        game.batch.draw(ghost1.sprite, ghost1.x, ghost1.y, cellW, cellH);
 
-        update(Gdx.graphics.getDeltaTime());
+        if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)){
+        pause();
+        }
+
+        switch (this.state) {
+            case RUN:
+
+                ghost1.draw(game.batch);
+                ghost2.draw(game.batch);
+                food.draw(game.batch);
+
+
+                for (GameObject life : ghost1.getLives()) {
+                    life.draw(game.batch);
+                }
+                for (GameObject life : ghost2.getLives()) {
+                    life.draw(game.batch);
+                }
+
+
+//        game.batch.draw(ghost1.sprite, ghost1.x, ghost1.y, cellW, cellH);
+                update(Gdx.graphics.getDeltaTime());
+                break;
+            case PAUSE:
+                break;
+        }
+
         game.batch.end();
 
         game.batch.begin();
@@ -146,6 +176,12 @@ public class GameScreen implements Screen {
 
     @Override
     public void pause() {
+        this.state = State.PAUSE;
+        ScreenUtils.clear(0,0,0.2f, 1);
+        camera.update();
+        game.batch.setProjectionMatrix(camera.combined);
+        bucketImage = new Texture(Gdx.files.internal("../../../sprites/paused.png"));
+        game.batch.draw(bucketImage, 150, 50, 500, 500);
     }
 
     @Override
@@ -155,8 +191,10 @@ public class GameScreen implements Screen {
     @Override
     public void dispose() {
 
-//        dropSound.dispose();
-//        rainMusic.dispose();
+    }
+
+    void genNewMap() {
+        mapModel = new Map().generate(5,9);
     }
 
     public void update(float delta){
@@ -173,14 +211,22 @@ public class GameScreen implements Screen {
                     ghost2.takeLife();
                     //-1 life of ghost2
                 }
+                genNewMap();
                 ghost1.setPosition(cellW,cellH);
                 ghost2.setPosition(cellW*(mapModel[0].length-2),cellH* (mapModel.length-2));
             }
+            Random r = new Random();
             if (ghost1.isCollide(food) && !ghost1.getIsChaser()) {
+                int x = r.nextInt(mapModel[0].length-2);
+                int y = r.nextInt(2)==1 ? mapModel.length-2 : 1;
+                food.setPosition(x*cellW+1, y*cellH);
                 ghost1.setChaser(true);
                 ghost2.setChaser(false);
             }
             if (ghost2.isCollide(food) && !ghost2.getIsChaser()) {
+                int x = r.nextInt(mapModel[0].length);
+                int y = r.nextInt(2)==1 ? mapModel.length-2 : 1;
+                food.setPosition(x*cellW, y*cellH);
                 ghost2.setChaser(true);
                 ghost1.setChaser(false);
             }
@@ -199,14 +245,6 @@ public class GameScreen implements Screen {
             gameOver = true;
         }
     }
-
-
-
-
-
-
-
-
 
 
     private void drawMap(Batch batch) {

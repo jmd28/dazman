@@ -145,11 +145,11 @@ public class Tetris {
         // assign all the cells a tetromino
         int tetromino = 0;
 
-        // ghost pen lives in tetromino -1 (in middle)
-        assign(chimney[HEIGHT/2][WIDTH-1], -1);
-        assign(chimney[HEIGHT/2][WIDTH-2], -1);
-        assign(chimney[HEIGHT/2+1][WIDTH-1], -1);
-        assign(chimney[HEIGHT/2+1][WIDTH-2], -1);
+//        // ghost pen lives in tetromino -1 (in middle)
+//        assign(chimney[HEIGHT/2][WIDTH-1], -1);
+//        assign(chimney[HEIGHT/2][WIDTH-2], -1);
+//        assign(chimney[HEIGHT/2+1][WIDTH-1], -1);
+//        assign(chimney[HEIGHT/2+1][WIDTH-2], -1);
 
         while (!chimFull()) {
             // the leftmost unfilled level
