@@ -52,8 +52,6 @@ public class GameScreen implements Screen {
         cellW = (int) camera.viewportWidth / mapModel[0].length;
         cellH = (int) camera.viewportHeight / mapModel.length;
 
-        Sprite ghostSprite = new Sprite(new Texture("jon2.jpg"));
-        ghost1 = new Ghost(ghostSprite, 100,100);
         Pixmap pixmap2 = new Pixmap(Gdx.files.internal("Map Sprites/csBlueDark.png"));
         Pixmap pixmap1 = new Pixmap(cellW, cellH, pixmap2.getFormat());
         pixmap1.drawPixmap(pixmap2,
