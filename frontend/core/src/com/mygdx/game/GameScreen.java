@@ -226,7 +226,7 @@ public class GameScreen implements Screen {
             if (ghost1.isCollide(food) && !ghost1.getIsChaser()) {
                 int x = r.nextInt(mapModel[0].length-2);
                 int y = r.nextInt(2)==1 ? mapModel.length-2 : 1;
-                food.setPosition(x*cellW+1, y*cellH);
+                food.setPosition((x+1)*cellW, y*cellH);
                 ghost1.setChaser(true, "jon2In.jpg");
                 ghost2.setChaser(false, "al.jpeg");
             }
